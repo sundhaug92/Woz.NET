@@ -1,24 +1,25 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using Woz1.NET;
-using System.Diagnostics;
 
 namespace UnitTests
 {
     [TestClass]
     public class TestCPU
     {
-        CPU cpu = new CPU(new Machine());
+        private CPU cpu = new CPU(new Machine());
+
         [TestMethod]
         public void ReadWriteMemory8()
         {
-            ushort testAddr=0;
+            ushort testAddr = 0;
             byte testData = (byte)(new Random()).Next(255);
             cpu.WriteMemory8(testAddr, testData);
 
             //
             Assert.AreEqual(testData, cpu.ReadMemory8(testAddr));
         }
+
         [TestMethod]
         public void ReadWriteMemory16()
         {
@@ -29,17 +30,17 @@ namespace UnitTests
             //
             Assert.AreEqual(testData, cpu.ReadMemory16(testAddr));
             Assert.AreEqual(testData & 0xFF, cpu.ReadMemory8(testAddr));
-            Assert.AreEqual(testData >> 8, cpu.ReadMemory8((ushort)(testAddr+1)));
+            Assert.AreEqual(testData >> 8, cpu.ReadMemory8((ushort)(testAddr + 1)));
         }
+
         [TestMethod]
         public void CheckNZ()
         {
-
             int[] testData = { 0, 1, 2, 4, 8, 16, 32, 64, 128, 255, 256 };
             bool[] correctN = { false, false, false, false, false, false, false, false, true, true, false };
             bool[] correctZ = { true, false, false, false, false, false, false, false, false, false, true };
 
-            for (int i = 0; i < testData.Length;i++ )
+            for (int i = 0; i < testData.Length; i++)
             {
                 cpu.CheckN(testData[i]);
                 cpu.CheckZ(testData[i]);
@@ -48,6 +49,7 @@ namespace UnitTests
                 Assert.AreEqual(correctZ[i], cpu.ZeroFlag);
             }
         }
+
         [TestMethod]
         public void getByteByMode()
         {
@@ -63,7 +65,7 @@ namespace UnitTests
         public void ASL()
         {
             cpu.CarryFlag = true;
-            cpu.setRegister(SelectedRegister.A,0);
+            cpu.setRegister(SelectedRegister.A, 0);
             cpu.ASL(Mode.Accumulator);
             Assert.AreEqual(0, cpu.getRegister(SelectedRegister.A));
             Assert.AreEqual(false, cpu.CarryFlag);
@@ -73,6 +75,7 @@ namespace UnitTests
             Assert.AreEqual(0, cpu.getRegister(SelectedRegister.A));
             Assert.AreEqual(true, cpu.CarryFlag);
         }
+
         [TestMethod]
         public void ROL()
         {
@@ -87,6 +90,7 @@ namespace UnitTests
             Assert.AreEqual(0, cpu.getRegister(SelectedRegister.A));
             Assert.AreEqual(true, cpu.CarryFlag);
         }
+
         /*[TestMethod]
         public void ROR()
         {
@@ -101,6 +105,7 @@ namespace UnitTests
             Assert.AreEqual(0x40, cpu.rA);
             Assert.AreEqual(false, cpu.CarryFlag);
         }*/
+
         [TestMethod]
         public void LSR()
         {
@@ -115,6 +120,7 @@ namespace UnitTests
             Assert.AreEqual(0, cpu.getRegister(SelectedRegister.A));
             Assert.AreEqual(true, cpu.CarryFlag);
         }
+
         [TestMethod]
         public void rFlags()
         {
@@ -161,6 +167,7 @@ namespace UnitTests
             cpu.rFlags = 0x80;
             Assert.AreEqual(true, cpu.NegativeFlag);
         }
+
         [TestMethod]
         public void PushPop8()
         {
@@ -174,6 +181,7 @@ namespace UnitTests
             Assert.AreEqual(0xFF, cpu.rSP);
             Assert.AreEqual(testData, cpu.ReadMemory8(0x1FF));
         }
+
         [TestMethod]
         public void PushPop16()
         {
@@ -244,6 +252,7 @@ namespace UnitTests
             Assert.AreEqual(0xFF, cpu.rA);
             Assert.AreEqual(0xA0, cpu.rFlags);
         }
+
         [TestMethod]
         public void IncreaseMemory()
         {
@@ -265,6 +274,7 @@ namespace UnitTests
             Assert.AreEqual(0x00, cpu.rA);
             Assert.AreEqual(0x22, cpu.rFlags);
         }
+
         [TestMethod]
         public void Increase()
         {
@@ -286,6 +296,7 @@ namespace UnitTests
             Assert.AreEqual(0x00, cpu.rA);
             Assert.AreEqual(0x22, cpu.rFlags);
         }
+
         [TestMethod]
         public void DecreaseMemory()
         {
@@ -301,6 +312,7 @@ namespace UnitTests
             Assert.AreEqual(0x80, cpu.rA);
             Assert.AreEqual(0xA0, cpu.rFlags);
         }
+
         [TestMethod]
         public void Decrease()
         {
@@ -316,7 +328,7 @@ namespace UnitTests
             Assert.AreEqual(0x80, cpu.rA);
             Assert.AreEqual(0xA0, cpu.rFlags);
         }
-        
+
         [TestMethod]
         public void LoadStoreRegister()
         {
@@ -415,11 +427,11 @@ namespace UnitTests
         [TestMethod]
         public void JumpTo()
         {
-            ushort us=(ushort)~cpu.rPC;
+            ushort us = (ushort)~cpu.rPC;
             cpu.JumpTo(us);
             Assert.AreEqual(cpu.rPC, us);
         }
-        
+
         [TestMethod]
         public void Reset()
         {
@@ -434,6 +446,7 @@ namespace UnitTests
             Assert.AreEqual(0x20, cpu.rFlags);
             Assert.AreEqual(0xFF00, cpu.rPC);
         }
+
         [TestMethod]
         public void Transfer()
         {
@@ -450,6 +463,7 @@ namespace UnitTests
                 }
             }
         }
+
         [TestMethod]
         public void Compare()
         {
@@ -458,12 +472,13 @@ namespace UnitTests
             cpu.Compare(SelectedRegister.A, Mode.Accumulator);
             Assert.AreEqual(0xA3, cpu.rFlags);
         }
+
         [TestMethod]
         public void GetSetByModeSymmetry()
         {
             foreach (Mode mode in (Mode[])Enum.GetValues(typeof(Mode)))
             {
-                if (mode == Mode.Immediate || mode==Mode.ZeroPageY||mode==Mode.Indirect) continue;//ZPY not yet implemented,Indirect only for 16b
+                if (mode == Mode.Immediate || mode == Mode.ZeroPageY || mode == Mode.Indirect) continue;//ZPY not yet implemented,Indirect only for 16b
                 byte b = (byte)new Random().Next(256);
                 ushort _pc = cpu.rPC;
                 cpu.setByteByMode(mode, b);

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Woz1.NET
 {
-    class Terminal
+    internal class Terminal
     {
         internal static readonly ushort KBD = 0xD010, KBD_CR = 0xD011, DSP = 0xD012, DSP_CR = 0xD013;
         private byte tmpByte;
@@ -16,7 +14,8 @@ namespace Woz1.NET
             this.machine = machine;
         }
 
-        long lastTicks = 0;
+        private long lastTicks = 0;
+
         internal void Step()
         {
             if ((machine.HWReadMemory(DSP) & (1 << 7)) > 0)
@@ -28,7 +27,6 @@ namespace Woz1.NET
                     machine.HWWriteMemory(DSP, tmpByte);
                     lastTicks = DateTime.Now.Ticks;
                 }
-
             }
             else
             {
@@ -37,6 +35,7 @@ namespace Woz1.NET
         }
 
         internal Queue<byte> inpQueue = new Queue<byte>();
+
         internal bool InpWaiting
         {
             get
@@ -44,9 +43,10 @@ namespace Woz1.NET
                 return inpQueue.Count > 0;
             }
         }
+
         internal void AppendOut(char p)
         {
-            inpQueue.Enqueue((byte)(char.ToUpper(p)|0x80));
+            inpQueue.Enqueue((byte)(char.ToUpper(p) | 0x80));
         }
     }
 }

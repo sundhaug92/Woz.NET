@@ -14,45 +14,46 @@ namespace Woz1.NET
             this.GotFocus += TextBoxGotFocus;
             this.Cursor = Cursors.Arrow; // mouse cursor like in other controls
         }
+
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
             {
                 case 0x0201://WM_LBUTTONDOWN
-                {
-                    ResetTextBox();
-                    return;
-                }
+                    {
+                        ResetTextBox();
+                        return;
+                    }
 
                 case 0x0202://WM_LBUTTONUP
-                {
-                    ResetTextBox();
-                    return;
-                }
+                    {
+                        ResetTextBox();
+                        return;
+                    }
 
                 case 0x0203://WM_LBUTTONDBLCLK
-                {
-                    ResetTextBox();
-                    return;
-                }
+                    {
+                        ResetTextBox();
+                        return;
+                    }
 
                 case 0x0204://WM_RBUTTONDOWN
-                {
-                    ResetTextBox();
-                    return;
-                }
+                    {
+                        ResetTextBox();
+                        return;
+                    }
 
                 case 0x0205://WM_RBUTTONUP
-                {
-                    ResetTextBox();
-                    return;
-                }
+                    {
+                        ResetTextBox();
+                        return;
+                    }
 
                 case 0x0206://WM_RBUTTONDBLCLK
-                {
-                    ResetTextBox();
-                    return;
-                }
+                    {
+                        ResetTextBox();
+                        return;
+                    }
             }
 
             base.WndProc(ref m);
@@ -66,7 +67,8 @@ namespace Woz1.NET
         }
 
         [DllImport("user32.dll")]
-        static extern bool HideCaret(IntPtr hWnd);
+        private static extern bool HideCaret(IntPtr hWnd);
+
         private void TextBoxGotFocus(object sender, EventArgs args)
         {
             HideCaret(this.Handle);

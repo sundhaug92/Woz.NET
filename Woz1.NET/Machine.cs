@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Woz1.NET
 {
@@ -12,11 +9,11 @@ namespace Woz1.NET
     {
         internal CPU cpu;
         internal Terminal terminal;
-        byte[] Memory = new byte[64 * 1024];
-        bool[] writeLock = new bool[64 * 1024];
+        private byte[] Memory = new byte[64 * 1024];
+        private bool[] writeLock = new bool[64 * 1024];
 
-        int cpuMultiplier = int.MaxValue;
-        int terminalMultiplier = 1;
+        private int cpuMultiplier = int.MaxValue;
+        private int terminalMultiplier = 1;
         private Form1 form1;
         private bool terminalEarly;
 
@@ -26,10 +23,12 @@ namespace Woz1.NET
             terminal = new Terminal(this);
         }
 
-        public Machine(Form1 form1):this()
+        public Machine(Form1 form1)
+            : this()
         {
             this.form1 = form1;
         }
+
         public void MainLoop()
         {
             while (true)
@@ -43,7 +42,7 @@ namespace Woz1.NET
                 int termTimes = 0;
                 while ((termTimes++ < terminalMultiplier) || ReadMemory(Terminal.DSP) > 0x80) terminal.Step();
                 byte[] IN = new byte[0x80];
-                
+
                 for (int i = 0; i < 0x80; i++) IN[i] = ReadMemory((ushort)(0x200 + i));
                 byte KBD = HWReadMemory(Terminal.KBD), KBD_CR = HWReadMemory(Terminal.KBD_CR), DSP = HWReadMemory(Terminal.DSP), DSP_CR = HWReadMemory(Terminal.DSP_CR);
                 byte XAML = HWReadMemory(0x24), XAMH = HWReadMemory(0x25), STL = HWReadMemory(0x26), STH = HWReadMemory(0x27), L = HWReadMemory(0x28), H = HWReadMemory(0x29), YSAV = HWReadMemory(0x2A), MODE = HWReadMemory(0x2B);
@@ -58,15 +57,20 @@ namespace Woz1.NET
             if (address == Terminal.KBD_CR) { terminalEarly = true; return (byte)(terminal.InpWaiting ? 0x80 : 0); }
             return Memory[address];
         }
-        public byte HWReadMemory(ushort address) { return Memory[address]; }
+
+        public byte HWReadMemory(ushort address)
+        {
+            return Memory[address];
+        }
 
         public void HWWriteMemory(ushort address, byte data)
         {
             Memory[address] = data;
         }
+
         public void WriteMemory(ushort address, byte data)
         {
-            if (address>>8==0xD0||address>>8==0x0)
+            if (address >> 8 == 0xD0 || address >> 8 == 0x0)
             {
                 terminalEarly = true;
             }
@@ -77,6 +81,7 @@ namespace Woz1.NET
         {
             writeLock[address] = true;
         }
+
         public void LoadRom(ushort address, string file)
         {
             foreach (byte b in File.ReadAllBytes(file))
@@ -87,14 +92,14 @@ namespace Woz1.NET
             }
         }
 
-        string termFB = "";
+        private string termFB = "";
+
         internal void PutCharOut(char c)
         {
             form1.termOut.Invoke(new Action(() =>
             {
                 if (c == '\r')
                 {
-
                     termFB += '\r'.ToString() + '\n'.ToString();
                 }
                 else if (c == '\n') return;

@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Woz1.NET
 {
     public partial class Form1 : Form
     {
-        Machine machine;
+        private Machine machine;
         private Thread loaderThread;
+
         public Form1()
         {
             InitializeComponent();
@@ -35,14 +29,14 @@ namespace Woz1.NET
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (loaderThread!=null&&loaderThread.IsAlive) loaderThread.Abort();
+            if (loaderThread != null && loaderThread.IsAlive) loaderThread.Abort();
             machine.Reset();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             openFileDialog1.ShowDialog();
-            loaderThread=new Thread(FileLoader);
+            loaderThread = new Thread(FileLoader);
             loaderThread.Start();
         }
 
